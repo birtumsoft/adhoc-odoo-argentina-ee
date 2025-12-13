@@ -270,6 +270,7 @@ class AccountJournal(models.Model):
             "journal_id": self.id,
             "company_id": self.company_id.id,
             "line_ids": line_ids,
+            "move_type": "in_invoice",
         }
         return move_vals
 
