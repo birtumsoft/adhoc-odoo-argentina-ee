@@ -71,7 +71,7 @@ class AccountJournal(models.Model):
         copy=False,
         check_company=True,
         domain="""[
-            (('account_type', 'in', ('asset_receivable', 'liability_payable'))]""",
+            ('account_type', 'in', ('asset_receivable', 'liability_payable'))]""",
     )
 
     @api.constrains("tax_settlement", "type")
