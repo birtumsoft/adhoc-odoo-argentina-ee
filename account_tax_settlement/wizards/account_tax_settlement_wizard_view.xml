@@ -18,7 +18,7 @@
                 <group>
                     <field name="date"/>
                     <field name="settlement_journal_id" invisible="not report_id" required="report_id"/>
-                    <field name="account_id"/>
+                    <field name="account_id" invisible="not report_settlement_allow_unbalanced" required="report_settlement_allow_unbalanced"/>
                 </group>
                 <footer>
                     <button name="confirm" string="Confirm" type="object" class="oe_highlight"/>
