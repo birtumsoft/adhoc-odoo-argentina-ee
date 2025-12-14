@@ -70,7 +70,7 @@ class AccountJournal(models.Model):
         copy=False,
         check_company=True,
         domain="""[
-            ('deprecated', '=', False), ('account_type', 'in', ('asset_receivable', 'liability_payable'))]""",
+            ('active', '=', False), ('account_type', 'in', ('asset_receivable', 'liability_payable'))]""",
     )
 
     @api.constrains("tax_settlement", "type")
@@ -194,7 +194,7 @@ class AccountJournal(models.Model):
 
         # agregamos la info para que se creen lineas para cada cuenta
         # etiquetada (estas lineas se llevan en cero)
-        domain = [("company_id", "="), ("deprecated", "=", False)]
+        domain = [("company_id", "="), ("active", "=", False)]
         if account_tags := self.settlement_account_tag_ids.filtered(lambda x: x.applicability == "accounts"):
             domain.append(("tag_ids", "in", account_tags.ids))
             company_id = self.company_id.id
@@ -203,7 +203,7 @@ class AccountJournal(models.Model):
             for account in self.env["account.account"].search(
                 [
                     *self.env["account.account"]._check_company_domain(company_id),
-                    ("deprecated", "=", False),
+                    ("active", "=", False),
                     ("tag_ids", "in", account_tags.ids),
                 ]
             ):
