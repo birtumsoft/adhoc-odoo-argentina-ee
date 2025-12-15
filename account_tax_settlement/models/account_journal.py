@@ -374,7 +374,7 @@ class AccountJournal(models.Model):
                 return action
             elif debt_balance and self.settlement_partner_id:
                 # Ingresa aquí al entrar en vista Kanban en diario de liquidacion en el botoncito 'Saldo a pagar'
-                action = self.settlement_partner_id.open_partner_ledger()
+                action = self.settlement_partner_id.open_customer_statement()
                 ctx = safe_eval(action.get("context"))
                 ctx.update(
                     {
