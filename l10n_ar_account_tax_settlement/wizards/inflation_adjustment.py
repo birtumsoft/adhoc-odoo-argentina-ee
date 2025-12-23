@@ -26,7 +26,7 @@ class InflationAdjustment(models.TransientModel):
         required=True,
     )
     account_id = fields.Many2one(
-        "account.account", domain=[("deprecated", "=", False)], required=True, check_company=True
+        "account.account", domain=[("active", "=", False)], required=True, check_company=True
     )
     start_index = fields.Float(
         compute="_compute_index",

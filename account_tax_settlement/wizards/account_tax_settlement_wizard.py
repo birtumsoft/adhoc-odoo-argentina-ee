@@ -35,7 +35,7 @@ class AccountTaxSettlementWizard(models.TransientModel):
     company_id = fields.Many2one(
         "res.company",
     )
-    account_id = fields.Many2one("account.account", check_company=True, domain=[("deprecated", "=", False)])
+    account_id = fields.Many2one("account.account", check_company=True, domain=[("active", "=", False)])
     report_settlement_allow_unbalanced = fields.Boolean(
         related="report_id.settlement_allow_unbalanced",
     )
