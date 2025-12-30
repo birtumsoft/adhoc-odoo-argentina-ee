@@ -19,7 +19,7 @@
 ##############################################################################
 {
     "name": "Accounting Reports Customized for Argentina",
-    "version": "19.0.1.1.0",
+    "version": "19.0.1.4.0",
     "category": "Accounting",
     "sequence": 14,
     "summary": "",
@@ -29,7 +29,7 @@
     "images": [],
     "depends": [
         "account_reports",
-        # "l10n_ar_tax",
+        "l10n_ar_tax",
         "l10n_ar_withholding",
         "l10n_latam_check",
         "l10n_ar_reports",
@@ -52,10 +52,17 @@
         "data/misiones_report.xml",
         "data/santa_fe_report.xml",
         "data/tucuman_report.xml",
+        "data/sicore_report.xml",
     ],
     "demo": [
-        # "demo/account_demo.xml",
+        "demo/res_partner_demo.xml",
+        "demo/account_demo.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "l10n_ar_account_reports/static/src/**/*",
+        ],
+    },
     "test": [],
     "installable": True,
     "auto_install": True,

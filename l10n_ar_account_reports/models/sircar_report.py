@@ -24,6 +24,7 @@ class L10n_ArSircarReportHandler(models.AbstractModel):
                 "action": "export_file",
                 "action_param": "sircar_ret_txt",
                 "file_export_type": "TXT",
+                "branch_allowed": True,
             },
             {
                 "name": "TXT Percepciones",
@@ -31,6 +32,7 @@ class L10n_ArSircarReportHandler(models.AbstractModel):
                 "action": "export_file",
                 "action_param": "sircar_perc_txt",
                 "file_export_type": "TXT",
+                "branch_allowed": True,
             },
         ]
 
@@ -135,10 +137,10 @@ class L10n_ArSircarReportHandler(models.AbstractModel):
 
                 # 11 Jurisdicción: código en Convenio Multilateral de la
                 # jurisdicción a la cual está presentando la DDJJ
-                if not tax.l10n_ar_state_id.jurisdiction_code:
+                if not tax.l10n_ar_state_id.jurisdiction_code or not tax.l10n_ar_state_id.jurisdiction_code:
                     raise RedirectWarning(
                         message=_(
-                            'No hay jurisdicción establecida en el impuesto "%(tax_name)s"en la solapa "API".',
+                            'No hay jurisdicción establecida en el impuesto "%(tax_name)s" o no tiene código de jurisdicción.',
                             tax_name=tax.name,
                         ),
                         action=tax.get_formview_action(),
@@ -229,10 +231,10 @@ class L10n_ArSircarReportHandler(models.AbstractModel):
 
                 # 11 Jurisdicción: código en Convenio Multilateral de la
                 # jurisdicción a la cual está presentando la DDJJ
-                if not tax.l10n_ar_state_id.jurisdiction_code:
+                if not tax.l10n_ar_state_id.jurisdiction_code or not tax.l10n_ar_state_id.jurisdiction_code:
                     raise RedirectWarning(
                         message=_(
-                            'No hay jurisdicción establecida en el impuesto "%(tax_name)s"en la solapa "API".',
+                            'No hay jurisdicción establecida en el impuesto "%(tax_name)s" o no tiene código de jurisdicción.',
                             tax_name=tax.name,
                         ),
                         action=tax.get_formview_action(),
