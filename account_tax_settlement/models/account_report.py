@@ -2,7 +2,8 @@ import ast
 
 from odoo import _, fields, models
 from odoo.exceptions import ValidationError
-from odoo import expression
+from odoo.fields import Domain
+
 
 class AccountReport(models.Model):
     _inherit = "account.report"
@@ -12,8 +13,8 @@ class AccountReport(models.Model):
     )
     settlement_title = fields.Char(translate=True)
     settlement_allow_unbalanced = fields.Boolean(
-        help="If you enble this option, then an account will be required when creating the settlement entry and "
-        "so that the balance of the report is sent to this account."
+        help="If you enable this option, then an account will be required when creating the settlement entry "
+             "so that the balance of the report is sent to this account."
     )
 
     def _init_options_buttons(self, options, previous_options=None):
@@ -70,11 +71,9 @@ class AccountReport(models.Model):
 
     def _report_create_settlement_entry(self, journal, options, account):
         """
-        Funcion que crea asiento de cierre / refundicon.
-        Basicamente busca todas las lineas del reporte que tienen engine domain, las evalua obteneindo domain de
-        cada una, los manda a _get_tax_settlement_entry_lines_vals para obtener el reverso de todas estsas lineas
-        y luego crea el asiento.
-        Para el caso del asiento de refundicion.. TODO
+        Función que crea asiento de cierre / refundición.
+        Básicamente busca todas las líneas del reporte con engine='domain',
+        evalúa sus dominios, obtiene las líneas inversas y crea el asiento.
         """
         self.ensure_one()
 
@@ -82,23 +81,25 @@ class AccountReport(models.Model):
         report_expressions = self.env["account.report.expression"].search(
             [("report_line_id", "in", self.line_ids.ids), ("engine", "=", "domain")]
         )
+
         domains = []
         for report_expression in report_expressions:
             options_domain = self._get_options_domain(options, report_expression.date_scope)
-            expression_domain = expression.AND([ast.literal_eval(report_expression.formula) + options_domain])
+            expression_domain = Domain.AND([ast.literal_eval(report_expression.formula) + options_domain])
             domains.append(expression_domain)
-        domain = expression.OR(domains)
+
+        domain = Domain.OR(domains)
         lines_vals = journal._get_tax_settlement_entry_lines_vals(domain)
 
-        balance = sum([x["debit"] - x["credit"] for x in lines_vals])
+        balance = sum(x["debit"] - x["credit"] for x in lines_vals)
         if not journal.company_id.currency_id.is_zero(balance):
             if not self.settlement_allow_unbalanced or not account:
                 raise ValidationError(
-                    "Parece que la liquidación quedaría desbalanceada. Si desea generar igualmente la liquidacion puede:\n"
+                    "Parece que la liquidación quedaría desbalanceada. Si desea generarla igualmente puede:\n"
                     '1. Ir a "Contabilidad / Configuración / Administración / Informes contables"\n'
                     "2. Buscar el informe correspondiente\n"
                     '3. En opciones, marcar "Settlement Allow Unbalanced"\n'
-                    "4. Puede volver a crear el asiento de liqidación seleccionando la cuenta de contrapartida que le sea solicitada"
+                    "4. Volver a crear el asiento seleccionando la cuenta de contrapartida que se le solicite"
                 )
             lines_vals.append(
                 {
@@ -111,5 +112,4 @@ class AccountReport(models.Model):
 
         vals = journal._get_tax_settlement_entry_vals(lines_vals)
         move = self.env["account.move"].create(vals)
-
         return move
