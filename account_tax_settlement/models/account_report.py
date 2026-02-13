@@ -2,7 +2,7 @@ import ast
 
 from odoo import _, fields, models
 from odoo.exceptions import ValidationError
-from odoo.models import expression
+
 
 
 class AccountReport(models.Model):
@@ -86,9 +86,9 @@ class AccountReport(models.Model):
         domains = []
         for report_expression in report_expressions:
             options_domain = self._get_options_domain(options, report_expression.date_scope)
-            expression_domain = expression.AND([ast.literal_eval(report_expression.formula) + options_domain])
+            expression_domain = fields.Domain.AND([ast.literal_eval(report_expression.formula) + options_domain])
             domains.append(expression_domain)
-        domain = expression.OR(domains)
+        domain = fields.Domain.OR(domains)
         lines_vals = journal._get_tax_settlement_entry_lines_vals(domain)
 
         balance = sum([x["debit"] - x["credit"] for x in lines_vals])
