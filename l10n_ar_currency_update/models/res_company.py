@@ -151,24 +151,25 @@ class ResCompany(models.Model):
         ar_companies = self.filtered(lambda x: x.currency_provider == "afip")
 
         for company in ar_companies:
-            new_parsed_data = parsed_data.copy()
-            for currency, (rate, date_rate) in parsed_data.items():
-                already_existing_rate = currency_rate.search(
-                    [
-                        ("currency_id", "=", currency_object.search([("name", "=", currency)]).id),
-                        ("name", "=", date_rate),
-                        ("company_id", "=", company.id),
-                    ]
-                )
-                if currency == "ARS":
-                    continue
-                if already_existing_rate:
-                    new_parsed_data.pop(currency)
-                elif company.rate_surcharge or company.rate_perc:
-                    rate = 1.0 / rate
-                    rate = rate * (1.0 + (company.rate_perc or 0.0))
-                    rate += company.rate_surcharge or 0.0
-                    rate = 1.0 / rate
-                    new_parsed_data[currency] = (rate, date_rate)
-            super(ResCompany, company)._generate_currency_rates(new_parsed_data)
+            if parsed_data:
+                new_parsed_data = parsed_data.copy()
+                for currency, (rate, date_rate) in parsed_data.items():
+                    already_existing_rate = currency_rate.search(
+                        [
+                            ("currency_id", "=", currency_object.search([("name", "=", currency)]).id),
+                            ("name", "=", date_rate),
+                            ("company_id", "=", company.id),
+                        ]
+                    )
+                    if currency == "ARS":
+                        continue
+                    if already_existing_rate:
+                        new_parsed_data.pop(currency)
+                    elif company.rate_surcharge or company.rate_perc:
+                        rate = 1.0 / rate
+                        rate = rate * (1.0 + (company.rate_perc or 0.0))
+                        rate += company.rate_surcharge or 0.0
+                        rate = 1.0 / rate
+                        new_parsed_data[currency] = (rate, date_rate)
+                super(ResCompany, company)._generate_currency_rates(new_parsed_data)
         super(ResCompany, self - ar_companies)._generate_currency_rates(parsed_data)

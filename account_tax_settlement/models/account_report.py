@@ -2,7 +2,7 @@ import ast
 
 from odoo import _, fields, models
 from odoo.exceptions import ValidationError
-from odoo.osv import expression
+from odoo.models import expression
 
 
 class AccountReport(models.Model):
